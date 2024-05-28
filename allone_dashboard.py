@@ -116,7 +116,7 @@ def main():
             st.subheader(f"Labor %: {labor:.2f}")
         
             aggregated_data2 = filtered_sales_data.groupby(['Date', 'Store'])['Labor %'].mean().reset_index()
-            fig_labor = px.bar(aggregated_data2, x='Date', y='Labor %', color='Store', title='Labor %', barmode='stack')
+            fig_labor = px.bar(aggregated_data2, x='Date', y='Labor %', color='Year', title='Labor %', barmode='stack')
             st.plotly_chart(fig_labor)
 
         
