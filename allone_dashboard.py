@@ -11,7 +11,7 @@ import plotly.express as px
 st.set_page_config(page_title="Sales Dashboard", page_icon=":bar_chart:", layout="wide")
 
 # Load the cleaned data from the Excel file
-cleaned_sales_file_path = "G:/My Drive/Streamlit Dashboard/Cleaned_Sales_Data.xlsx"
+cleaned_sales_file_path = "data/Cleaned_Sales_Data.xlsx"
 
 # Read the Excel file into a pandas dataframe
 sales_data = pd.read_excel(cleaned_sales_file_path, sheet_name='Sales')
