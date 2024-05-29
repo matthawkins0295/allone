@@ -26,7 +26,7 @@ sales_data['Year'] = sales_data['Date'].dt.year
 sales_data = sales_data.rename(columns={"Period No": "Period_No"})
 
 # Sidebar filters
-selected_years = st.sidebar.multiselect("Select Year:", options=sales_data["Year"].unique().tolist(), default=sales_data['Year'].unique().tolist())
+selected_years = st.sidebar.multiselect("Select Year:", options=sales_data["Year"].unique().tolist(), default=[2024] if 2024 in sales_data["Year"].unique() else sales_data["Year"].unique().tolist())
 
 # Add "Select All" option for dates
 all_dates = sales_data["Date"].dt.strftime('%Y-%m-%d').unique().tolist()
