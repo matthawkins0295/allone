@@ -6,15 +6,17 @@
 
 import pandas as pd
 import streamlit as st
-import plotly.express as px 
+import plotly.express as px
+import sqlite3
 
 st.set_page_config(page_title="Sales Dashboard", page_icon=":bar_chart:", layout="wide")
 
-# Load the cleaned data from the Excel file
-cleaned_sales_file_path = "data/Cleaned_Sales_Data.xlsx"
-
-# Read the Excel file into a pandas dataframe
-sales_data = pd.read_excel(cleaned_sales_file_path, sheet_name='Sales')
+# Connect to the SQLite database
+conn = sqlite3.connect(r"C:\Users\admin\all_one_inc.db")
+print("connection successful")
+# Load the cleaned data from the SQLite database
+query = "SELECT * FROM all_one_sales"  # Adjust the table name if necessary
+sales_data = pd.read_sql(query, conn)
 
 # Convert Date column to datetime
 sales_data['Date'] = pd.to_datetime(sales_data['Date'])
@@ -25,12 +27,21 @@ sales_data['Year'] = sales_data['Date'].dt.year
 # Rename columns to remove spaces
 sales_data = sales_data.rename(columns={"Period No": "Period_No"})
 
+most_recent_year = sales_data["Year"].max()
+
 # Sidebar filters
-selected_years = st.sidebar.multiselect("Select Year:", options=sales_data["Year"].unique().tolist(), default=[2024] if 2024 in sales_data["Year"].unique() else sales_data["Year"].unique().tolist())
+selected_years = st.sidebar.multiselect(
+    "Select Year:",
+    options=sales_data["Year"].unique().tolist(),
+    default=[most_recent_year]
+)
 
 # Add "Select All" option for dates
 all_dates = sales_data["Date"].dt.strftime('%Y-%m-%d').unique().tolist()
 all_dates.insert(0, "Select All")
+
+# Sort the dates in descending order (except "Select All")
+all_dates[1:] = sorted(all_dates[1:], key=lambda x: pd.to_datetime(x), reverse=True)
 
 selected_date = st.sidebar.selectbox("Select Date:", options=all_dates)
 
@@ -65,16 +76,20 @@ filtered_sales_data = sales_data[
     (sales_data['Store'].isin(selected_stores))
 ]
 
+# Sort the filtered data by Date in descending order
+filtered_sales_data = filtered_sales_data.sort_values(by='Date', ascending=False)
+
+
 # Streamlit app
 def main():
     st.title(":bar_chart: Sales Data Dashboard")
     st.markdown('##')
 
- # Create two columns
+    # Create two columns
     col1, col2 = st.columns(2)
 
     # Display filtered data
-    #st.write("Filtered Sales Data", filtered_sales_data)
+    # st.write("Filtered Sales Data", filtered_sales_data)
 
     # Calculate metrics
     with col1:
@@ -87,40 +102,30 @@ def main():
 
             st.subheader(f"Total Sales: ${total_sales:,.2f}")
             aggregated_data = filtered_sales_data.groupby('Date')['Total Revenue'].sum().reset_index()
-            fig_total_sales = px.line(aggregated_data, x= 'Date', y = 'Total Revenue', title= "Total Sales",color_discrete_sequence=["#0083B8"] * len(aggregated_data),
-            template="plotly_white")
+            fig_total_sales = px.line(aggregated_data, x='Date', y='Total Revenue', title="Total Sales", color_discrete_sequence=["#0083B8"] * len(aggregated_data), template="plotly_white")
             st.plotly_chart(fig_total_sales)
 
-
             st.subheader(f"Average Ticket: ${average_ticket:.2f}")
-
             aggregated_data1 = filtered_sales_data.groupby('Date')['Avg Ticket'].mean().reset_index()
-            fig_average_ticket = px.line(aggregated_data1, x = 'Date', y= 'Avg Ticket', title = 'Average Ticket')
+            fig_average_ticket = px.line(aggregated_data1, x='Date', y='Avg Ticket', title='Average Ticket')
             st.plotly_chart(fig_average_ticket)
 
             st.subheader(f"Food %: {food:.2f}")
-
             aggregated_data4 = filtered_sales_data.groupby('Date')['Food %'].mean().reset_index()
-            fig_food = px.line(aggregated_data4, x = 'Date', y= 'Food %', title = 'Food %')
+            fig_food = px.line(aggregated_data4, x='Date', y='Food %', title='Food %')
             st.plotly_chart(fig_food)
 
     with col2:
         if not filtered_sales_data.empty:
-       
             st.subheader(f"Customer Count: {customer_count:,.0f}")
-
             aggregated_data3 = filtered_sales_data.groupby('Date')['Cust Count'].sum().reset_index()
-            fig_cust_count = px.bar(aggregated_data3, x = 'Date', y= 'Cust Count', title = 'Customer Count')
+            fig_cust_count = px.bar(aggregated_data3, x='Date', y='Cust Count', title='Customer Count')
             st.plotly_chart(fig_cust_count)
 
             st.subheader(f"Labor %: {labor:.2f}")
-        
-            aggregated_data2 = filtered_sales_data.groupby(['Date', 'Store'])['Labor %'].mean().reset_index()
+            aggregated_data2 = filtered_sales_data.groupby('Date')['Labor %'].mean().reset_index()
             fig_labor = px.bar(aggregated_data2, x='Date', y='Labor %', title='Labor %')
             st.plotly_chart(fig_labor)
-
-        
-
         else:
             st.write("No data available for the selected filters.")
 
@@ -129,6 +134,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
