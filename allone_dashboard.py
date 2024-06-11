@@ -12,7 +12,7 @@ import sqlite3
 st.set_page_config(page_title="Sales Dashboard", page_icon=":bar_chart:", layout="wide")
 
 # Connect to the SQLite database
-conn = sqlite3.connect(r"C:\Users\admin\all_one_inc.db")
+conn = sqlite3.connect("data/all_one_inc.db")
 print("connection successful")
 # Load the cleaned data from the SQLite database
 query = "SELECT * FROM all_one_sales"  # Adjust the table name if necessary
