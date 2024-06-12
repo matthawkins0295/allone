@@ -9,7 +9,7 @@ st.set_page_config(page_title="Sales Dashboard", page_icon=":bar_chart:", layout
 conn = sqlite3.connect("allone\data\all_one_inc.db")
 
 # Load the cleaned data from the SQLite database
-query = "SELECT * FROM sales_data"  # Adjust the table name if necessary
+query = "SELECT * FROM all_one_sales"  # Adjust the table name if necessary
 sales_data = pd.read_sql(query, conn)
 
 # Convert Date column to datetime
