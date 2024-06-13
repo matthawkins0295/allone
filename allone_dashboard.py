@@ -10,7 +10,7 @@ st.set_page_config(page_title="Sales Dashboard", page_icon=":bar_chart:", layout
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Path to the SQLite database file
-db_path = os.path.join(current_dir, "allone","data", "all_one_inc.db")
+db_path = os.path.join(current_dir,"data", "all_one_inc.db")
 
 # Debugging statements to check file path
 st.write(f"Current directory: {current_dir}")
