@@ -60,13 +60,17 @@ else:
     )
 
     # Add "Select All" option for dates
+    most_recent_date = sales_data['Date'].max().strftime('%Y-%m-%d')
     all_dates = sales_data["Date"].dt.strftime('%Y-%m-%d').unique().tolist()
     all_dates.insert(0, "Select All")
 
     # Sort the dates in descending order (except "Select All")
     all_dates[1:] = sorted(all_dates[1:], key=lambda x: pd.to_datetime(x), reverse=True)
 
-    selected_date = st.sidebar.selectbox("Select Date:", options=all_dates)
+    most_recent_date_index = all_dates.index(most_recent_date)
+
+
+    selected_date = st.sidebar.selectbox("Select Date:", options=all_dates, index=most_recent_date_index)
 
     # Handle "Select All" option for dates
     if selected_date == "Select All":
