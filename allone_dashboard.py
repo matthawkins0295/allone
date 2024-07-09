@@ -12,11 +12,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 # Path to the SQLite database file
 db_path = os.path.join(current_dir,"data", "all_one_inc.db")
 
-# Debugging statements to check file path
-st.write(f"Current directory: {current_dir}")
-st.write(f"Database path: {db_path}")
-st.write(f"Database exists: {os.path.exists(db_path)}")
-
 # Connect to the SQLite database
 try:
     conn = sqlite3.connect(db_path)
